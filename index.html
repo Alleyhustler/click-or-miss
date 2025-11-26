@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click or Miss</title>
+    <title>Click or Pray</title>
     <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -68,10 +68,10 @@
 
         .primary-text {
             font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 300;
+            font-weight: 700;
             letter-spacing: -0.04em;
             line-height: 0.9;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             background: linear-gradient(180deg, #000000 0%, #525252 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -82,7 +82,7 @@
             font-size: 1.125rem;
             font-weight: 400;
             color: #64748b;
-            margin-bottom: 80px;
+            margin-bottom: 60px;
             letter-spacing: -0.01em;
         }
 
@@ -117,56 +117,52 @@
         .target.active {
             opacity: 1;
             transform: scale(1);
-            animation: pulse 2s infinite;
+            animation: start-pulse 2s infinite;
         }
 
         .target:hover {
             transform: scale(1.05);
-            box-shadow: 
-                0 8px 40px rgba(0, 0, 0, 0.12),
-                0 0 0 20px rgba(99, 102, 241, 0.1);
+            border-color: var(--accent);
         }
 
-        .target-inner {
-            width: 20px;
-            height: 20px;
-            background: var(--accent);
-            border-radius: 50%;
-            transition: all 0.2s ease;
+        /* New Start Button Text */
+        .start-text {
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--primary);
+            z-index: 2;
         }
 
-        .target:hover .target-inner {
-            transform: scale(1.2);
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                box-shadow: 
-                    0 4px 20px var(--shadow),
-                    0 0 0 0 rgba(99, 102, 241, 0.2);
+        @keyframes start-pulse {
+            0% { 
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
             }
-            50% { 
-                box-shadow: 
-                    0 4px 20px var(--shadow),
-                    0 0 0 10px rgba(99, 102, 241, 0.1);
+            70% { 
+                box-shadow: 0 0 0 20px rgba(99, 102, 241, 0);
+            }
+            100% { 
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
             }
         }
 
-        /* Miss State */
-        .miss-interface {
+        /* Pray State */
+        .Pray-interface {
             position: fixed;
             inset: 0;
             display: none;
             align-items: center;
             justify-content: center;
             background: linear-gradient(180deg, #fafafa 0%, #f1f1f1 100%);
+            z-index: 100;
         }
 
-        .miss-interface.active {
+        .Pray-interface.active {
             display: flex;
         }
 
-        .miss-text {
+        .Pray-text {
             font-size: clamp(3rem, 10vw, 8rem);
             font-weight: 700;
             color: #ef4444;
@@ -174,7 +170,7 @@
             letter-spacing: -0.05em;
         }
 
-        .miss-subtitle {
+        .Pray-subtitle {
             font-size: 1.125rem;
             color: #64748b;
             margin-bottom: 48px;
@@ -380,22 +376,23 @@
     <!-- Landing Interface -->
     <div class="interface" id="landingInterface">
         <div class="interface-container">
-            <img src="image__4_-removebg-preview.png" alt="Click or Miss" class="logo" width="300px">
-            <h1 class="primary-text"></h1>
-            <p class="secondary-text">That's it.</p>
+            <!-- Added Logo/Title here -->
+            <h1 class="primary-text">Click or Pray</h1>
+            <p class="secondary-text">Speed is essential. Click to begin.</p>
             <div class="target-zone">
                 <div class="target" id="entryTarget">
-                    <div class="target-inner"></div>
+                    <!-- Changed inner content to text -->
+                    <span class="start-text">START</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Miss Interface -->
-    <div class="miss-interface" id="missInterface">
-        <div>
-            <div class="miss-text">Miss</div>
-            <p class="miss-subtitle">Refresh to try again.</p>
+    <!-- Pray Interface -->
+    <div class="Pray-interface" id="PrayInterface">
+        <div style="text-align: center;">
+            <div class="Pray-text">Pray</div>
+            <p class="Pray-subtitle">Too slow.</p>
             <button class="retry-button" onclick="location.reload()">Retry</button>
         </div>
     </div>
@@ -406,7 +403,7 @@
             <h2 class="arena-title">Arena</h2>
             <div class="arena-metrics">
                 <span>Hits: <strong id="hits">0</strong></span>
-                <span>Misses: <strong id="missCount">0</strong></span>
+                <span>Prayes: <strong id="PrayCount">0</strong></span>
                 <span>Accuracy: <strong id="accuracy">100%</strong></span>
             </div>
         </div>
@@ -425,11 +422,11 @@
     </div>
 
     <script>
-        class ClickOrMiss {
+        class ClickOrPray {
             constructor() {
                 this.state = 'landing';
                 this.hits = 0;
-                this.misses = 0;
+                this.Prayes = 0;
                 this.activeTargets = [];
                 
                 this.initCursor();
@@ -450,16 +447,12 @@
             }
 
             initLanding() {
+                // Simply animate the start button in. 
+                // REMOVED: The timer that killed you automatically.
                 setTimeout(() => {
                     const target = document.getElementById('entryTarget');
                     target.classList.add('active');
-                    
-                    setTimeout(() => {
-                        if (this.state === 'landing') {
-                            this.showMiss();
-                        }
-                    }, 3000);
-                }, 1500);
+                }, 500);
             }
 
             bindEvents() {
@@ -491,20 +484,25 @@
                 }, true);
             }
 
-            showMiss() {
-                this.state = 'miss';
+            showPray() {
+                this.state = 'Pray';
                 document.getElementById('landingInterface').style.display = 'none';
-                document.getElementById('missInterface').classList.add('active');
+                document.getElementById('PrayInterface').classList.add('active');
             }
 
             enterArena() {
                 this.state = 'arena';
-                document.getElementById('landingInterface').style.display = 'none';
-                document.getElementById('arena').classList.add('active');
+                
+                // Add a transition effect
+                const target = document.getElementById('entryTarget');
+                target.style.transform = 'scale(50)';
+                target.style.opacity = '0';
                 
                 setTimeout(() => {
+                    document.getElementById('landingInterface').style.display = 'none';
+                    document.getElementById('arena').classList.add('active');
                     this.spawnTarget();
-                }, 800);
+                }, 400);
             }
 
             spawnTarget() {
@@ -555,11 +553,11 @@
                 // Auto-remove
                 setTimeout(() => {
                     if (target.parentNode) {
-                        this.misses++;
+                        this.Prayes++;
                         this.updateStats();
                         target.remove();
                         
-                        if (this.misses >= 5) {
+                        if (this.Prayes >= 5) {
                             this.endGame();
                         } else {
                             setTimeout(() => {
@@ -572,9 +570,9 @@
 
             updateStats() {
                 document.getElementById('hits').textContent = this.hits;
-                document.getElementById('missCount').textContent = this.misses;
+                document.getElementById('PrayCount').textContent = this.Prayes;
                 
-                const total = this.hits + this.misses;
+                const total = this.hits + this.Prayes;
                 const accuracy = total > 0 ? Math.round((this.hits / total) * 100) : 100;
                 document.getElementById('accuracy').textContent = accuracy + '%';
                 
@@ -593,14 +591,14 @@
             }
 
             endGame() {
-                this.state = 'miss';
+                this.state = 'Pray';
                 document.getElementById('arena').classList.remove('active');
-                document.getElementById('missInterface').classList.add('active');
+                document.getElementById('PrayInterface').classList.add('active');
             }
         }
 
         // Initialize
-        new ClickOrMiss();
+        new ClickOrPray();
     </script>
 </body>
 </html>
